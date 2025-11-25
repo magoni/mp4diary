@@ -8,20 +8,65 @@
     <style>
         body {
             position: relative;
+            background: #fff;
+            overflow: hidden;
         }
 
         video {
             position: absolute;
-            width: 400px;
+            width: 300px;
+        }
+
+        /* halo background */
+        #halo-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .halo {
+            position: absolute;
+            border-radius: 50%;
+            /* darker particles use a slightly tighter blur */
+            filter: blur(6px);
+            transform: translate3d(0, 0, 0);
+            /* fallback/base opacity for non-JS or initial paint */
+            opacity: 1.0;
+            /* on white background a multiply blend gives dark glows */
+            mix-blend-mode: multiply;
+            will-change: transform, opacity;
+        }
+
+        img,
+        video {
+            z-index: 2;
         }
     </style>
 </head>
 
-<body bgcolor="#000000">
-    <!-- <video autoplay muted src="/received/day1.mov" style="top: 50px; left: 50px;"></video>
-    <video autoplay muted src="/received/day2.mov" style="top: 350px; left: 400px;"></video> -->
+<body bgcolor="#ffffff">
+    <div id="halo-container" aria-hidden="true"></div>
+
     <img src="/static/day1.jpg" style="position: absolute; top: 50px; left: 50px; width: 400px;">
     <img src="/static/day2.jpg" style="position: absolute; top: 350px; left: 400px; width: 400px;">
+
+    <script>
+        window.HaloBackgroundConfig = window.HaloBackgroundConfig || {
+            count: 120,
+            colors: [
+                'rgba(12, 12, 12, 0.95)',
+                'rgba(36, 36, 36, 0.95)',
+                'rgba(64, 64, 64, 0.95)',
+                'rgba(16, 20, 24, 0.95)'
+            ],
+            sizeMin: 6,
+            sizeMax: 36,
+            blur: 6
+        };
+    </script>
+    <script src="/static/halo.js" defer></script>
 </body>
 
 </html>
