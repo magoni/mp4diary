@@ -49,10 +49,33 @@
 <body bgcolor="#ffffff">
     <div id="halo-container" aria-hidden="true"></div>
 
-    <img src="/static/day1.jpg" style="position: absolute; top: 50px; left: 50px; width: 400px;">
-    <img src="/static/day2.jpg" style="position: absolute; top: 350px; left: 400px; width: 400px;">
+    <img src="/static/day1.jpg" data-video="/static/day1.mov"
+        style="position: absolute; top: 50px; left: 50px; width: 400px; cursor: pointer;">
+    <img src="/static/day2.jpg" data-video="/static/day2.mov"
+        style="position: absolute; top: 350px; left: 400px; width: 400px; cursor: pointer;">
+
+    <!-- day 3 (image + video) -->
+    <img src="/static/day3.jpg" data-video="/static/day3.mov"
+        style="position: absolute; top: 650px; left: 50px; width: 400px; cursor: pointer;">
 
     <script>
+        // remember if the user interacted with the page — allows unmuted autoplay later
+        window._userHasInteracted = window._userHasInteracted || false;
+        (function () {
+            function mark() {
+                if (window._userHasInteracted) return;
+                window._userHasInteracted = true;
+                // remove listeners once we have an interaction
+                document.removeEventListener('pointerdown', mark);
+                document.removeEventListener('keydown', mark);
+                document.removeEventListener('touchstart', mark);
+            }
+
+            // capture a broad user gesture set
+            document.addEventListener('pointerdown', mark, { once: true });
+            document.addEventListener('keydown', mark, { once: true });
+            document.addEventListener('touchstart', mark, { once: true });
+        })();
         window.HaloBackgroundConfig = window.HaloBackgroundConfig || {
             count: 120,
             colors: [
@@ -67,6 +90,80 @@
         };
     </script>
     <script src="/static/halo.js" defer></script>
+
+    <script>
+        // Open a centered popup window and write a simple HTML document with an autoplaying, muted video
+        function openCenteredPopup(url, desiredWidth = 960, desiredHeight = 604) {
+            if (!url) return null;
+
+            // calculate the size within available screen
+            const w = Math.min(desiredWidth, Math.floor(window.screen.availWidth * 0.92));
+            const h = Math.min(desiredHeight, Math.floor(window.screen.availHeight * 0.86));
+
+            // account for multi-screen setups
+            const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+            const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+            const left = dualScreenLeft + Math.floor((window.innerWidth - w) / 2);
+            const top = dualScreenTop + Math.floor((window.innerHeight - h) / 2);
+
+            // include 'location=no' (old browsers) and remove toolbar/status where possible.
+            // NOTE: modern browsers intentionally keep an address bar for security —
+            // this is a best-effort request and may be ignored.
+            const features = 'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',resizable=yes,scrollbars=no,location=no,status=no,toolbar=no,menubar=no';
+
+            // open or reuse a named popup window so repeated clicks reuse the same popup
+            // (some browsers still show the address bar regardless)
+            const win = window.open('', 'video-popup', features);
+            if (!win) {
+                // popup blocked — fallback to opening video in a new tab
+                window.location.href = url;
+                return null;
+            }
+
+            // Basic markup for the popup — if the user has previously interacted with the page
+            // we will try to open unmuted, otherwise start muted to satisfy autoplay policies.
+            const shouldStartUnmuted = !!window._userHasInteracted;
+
+            // Basic markup for the popup
+            const html = '<!doctype html>' +
+                '<html>' +
+                '<head>' +
+                '<meta charset="utf-8">' +
+                '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+                '<title>Video</title>' +
+                '<style>html,body{height:100%;margin:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}video{max-width:100%;max-height:100%;box-shadow:0 8px 40px rgba(0,0,0,0.5);}</style>' +
+                '</head>' +
+                '<body>' +
+                '<video id="popupVideo" src="' + url + '" playsinline autoplay ' + (shouldStartUnmuted ? '' : 'muted') + ' controls></video>' +
+                '<script>var v=document.getElementById("popupVideo"); if(' + (shouldStartUnmuted ? 'true' : 'false') + '){ v.muted = false; } else { v.muted = true; } v.play && v.play().catch(function(){}); window.addEventListener("beforeunload", function(){ try{v.pause(); }catch(e){} });<\/script>' +
+                '</body>' +
+                '</html>';
+
+            try {
+                win.document.open();
+                win.document.write(html);
+                win.document.close();
+                win.focus();
+            } catch (err) {
+                // Could fail on cross-origin or other restrictions — fallback
+                console.warn('Could not write to popup window — opening raw video URL instead', err);
+                win.location.href = url;
+            }
+
+            return win;
+        }
+
+        // Attach click handlers to images with data-video set
+        document.addEventListener('click', function (e) {
+            const el = e.target && e.target.closest && e.target.closest('img[data-video]');
+            if (!el) return;
+            e.preventDefault();
+            const videoUrl = el.dataset && el.dataset.video;
+            // open popup at desired, fixed size: 960x604 (still constrained by available screen)
+            openCenteredPopup(videoUrl, 960, 604);
+        }, { capture: true });
+    </script>
 </body>
 
 </html>
