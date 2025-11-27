@@ -39,9 +39,26 @@
             will-change: transform, opacity;
         }
 
-        img,
-        video {
+        /* image layer container */
+        #image-layer {
+            position: fixed;
+            inset: 0;
             z-index: 2;
+        }
+
+        /* per-image mask: hide image except for a circular, centered area at --fx/--fy */
+        img.masked {
+            -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+            mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            transition: -webkit-mask-position 120ms linear, mask-position 120ms linear;
+        }
+
+        /* helper: when an image is hidden (not under cursor), push the center off-screen so it becomes invisible */
+        img.masked.hidden {
+            -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+            mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
         }
     </style>
 </head>
@@ -49,14 +66,16 @@
 <body bgcolor="#ffffff">
     <div id="halo-container" aria-hidden="true"></div>
 
-    <img src="/static/day1.jpg" data-video="/static/day1.mov"
-        style="position: absolute; top: 50px; left: 50px; width: 400px; cursor: pointer;">
-    <img src="/static/day2.jpg" data-video="/static/day2.mov"
-        style="position: absolute; top: 350px; left: 400px; width: 400px; cursor: pointer;">
+    <div id="image-layer" style="position:fixed;inset:0;z-index:2;">
+        <img src="/static/day1.jpg" data-video="/static/day1.mov"
+            style="position: absolute; top: 50px; left: 50px; width: 400px; cursor: pointer;">
+        <img src="/static/day2.jpg" data-video="/static/day2.mov"
+            style="position: absolute; top: 350px; left: 400px; width: 400px; cursor: pointer;">
 
-    <!-- day 3 (image + video) -->
-    <img src="/static/day3.jpg" data-video="/static/day3.mov"
-        style="position: absolute; top: 650px; left: 50px; width: 400px; cursor: pointer;">
+        <!-- day 3 (image + video) -->
+        <img src="/static/day3.jpg" data-video="/static/day3.mov"
+            style="position: absolute; top: 650px; left: 50px; width: 400px; cursor: pointer;">
+    </div>
 
     <script>
         // remember if the user interacted with the page — allows unmuted autoplay later
@@ -163,6 +182,80 @@
             // open popup at desired, fixed size: 960x604 (still constrained by available screen)
             openCenteredPopup(videoUrl, 960, 604);
         }, { capture: true });
+    </script>
+
+    <script>
+        (function () {
+            // small runtime config (can be changed on window for customization)
+            window.FlashlightConfig = window.FlashlightConfig || { radius: 260, enabled: true };
+
+            const container = document.getElementById('image-layer');
+            if (!container) return;
+
+            // all images in the image-layer are masked
+            const images = Array.from(container.querySelectorAll('img'));
+            images.forEach(img => {
+                img.classList.add('masked');
+                // start hidden until user moves over an image (keeps the same UX as the fullscreen flashlight)
+                img.classList.add('hidden');
+                img.style.setProperty('--fr', window.FlashlightConfig.radius + 'px');
+            });
+
+            function setRadius(r) {
+                images.forEach(i => i.style.setProperty('--fr', r + 'px'));
+            }
+
+            function enable() {
+                window.FlashlightConfig.enabled = true;
+                // keep them hidden until pointer moves into an image
+                images.forEach(i => i.classList.add('hidden'));
+            }
+
+            function disable() {
+                window.FlashlightConfig.enabled = false;
+                // remove masking so images display normally
+                images.forEach(i => i.classList.remove('masked', 'hidden'));
+            }
+
+            // track pointer and update each image's local mask if pointer sits inside its bounds
+            function onPointerMove(e) {
+                if (!window.FlashlightConfig.enabled) return;
+                for (const img of images) {
+                    const r = img.getBoundingClientRect();
+                    const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+                    if (inside) {
+                        const cx = Math.round(e.clientX - r.left);
+                        const cy = Math.round(e.clientY - r.top);
+                        img.classList.remove('hidden');
+                        img.style.setProperty('--fx', cx + 'px');
+                        img.style.setProperty('--fy', cy + 'px');
+                    } else {
+                        // push mask off-screen so image is hidden
+                        img.classList.add('hidden');
+                    }
+                }
+            }
+
+            function onTouchMove(e) {
+                const t = e.touches && e.touches[0];
+                if (!t) return;
+                onPointerMove(t);
+            }
+
+            // wire events
+            document.addEventListener('pointermove', onPointerMove, { passive: true });
+            document.addEventListener('touchmove', onTouchMove, { passive: true });
+
+            // keyboard toggle: 'f' toggles flashlight
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'f' || e.key === 'F') {
+                    if (window.FlashlightConfig.enabled) disable(); else enable();
+                }
+            });
+
+            // expose API
+            window.Flashlight = { enable, disable, setRadius };
+        })();
     </script>
 </body>
 

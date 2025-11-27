@@ -1,0 +1,2 @@
+- [ ] description text in corner
+- [ ] image border
