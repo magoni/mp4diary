@@ -313,6 +313,28 @@
             return win;
         }
 
+        // If we're hosted on a neocities domain, hotlink videos from the public netlify site
+        (function () {
+            try {
+                const host = window.location.hostname || '';
+                if (host.indexOf('neocities') !== -1) {
+                    const base = 'https://mp4diary.netlify.app/';
+                    document.querySelectorAll('img[data-video]').forEach(img => {
+                        const v = img.getAttribute('data-video') || '';
+                        // leave absolute URLs alone
+                        if (!v || /^https?:\/\//i.test(v)) return;
+                        // normalize relative path and hotlink to the netlify host
+                        const normalized = v.replace(/^\.\//, '').replace(/^\//, '');
+                        const finalUrl = base + normalized;
+                        img.setAttribute('data-video', finalUrl);
+                        // ensure dataset reflects change immediately
+                        img.dataset.video = finalUrl;
+                    });
+                }
+            } catch (err) {
+            }
+        })();
+
         // Attach click handlers to images with data-video set
         document.addEventListener('click', function (e) {
             const el = e.target && e.target.closest && e.target.closest('img[data-video]');
