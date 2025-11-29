@@ -10,6 +10,38 @@
             position: relative;
             background: #fff;
             overflow: hidden;
+            padding: 16px;
+        }
+
+        .description p {
+            margin-top: 0;
+        }
+
+        #language-select {
+            margin-bottom: 16px;
+        }
+
+        .description-container {
+            position: fixed;
+            right: 16px;
+            top: 16px;
+            max-width: 600px;
+            margin: 0 auto 48px auto;
+            padding: 0 16px;
+            z-index: 3;
+            text-align: right;
+        }
+
+        .description {
+            /* max-width: 600px; */
+            /* margin: 24px auto; */
+            padding: 0;
+            /* font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+                sans-serif; */
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #222;
         }
 
         video {
@@ -44,6 +76,14 @@
             position: fixed;
             inset: 0;
             z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-auto-rows: minmax(280px, 1fr);
+            gap: 36px;
+            align-items: center;
+            justify-items: center;
+            padding: 48px;
+            box-sizing: border-box;
         }
 
         /* per-image mask: hide image except for a circular, centered area at --fx/--fy */
@@ -53,6 +93,14 @@
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
             transition: -webkit-mask-position 120ms linear, mask-position 120ms linear;
+            position: relative;
+            /* allow transforms to move the asset inside the grid cell */
+            transform: translate(var(--ox, 0px), var(--oy, 0px));
+            transition: transform 220ms ease, -webkit-mask-position 120ms linear, mask-position 120ms linear;
+            /* make images fill their grid cell */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* helper: when an image is hidden (not under cursor), push the center off-screen so it becomes invisible */
@@ -60,27 +108,123 @@
             -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
             mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
         }
+
+        /* pulse to hint presence — temporarily reveal the center and scale briefly */
+        img.masked.pulse {
+            animation: pulseReveal var(--pulse-duration, 1.2s) ease-in-out both;
+        }
+
+        @keyframes pulseReveal {
+            0% {
+                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(0.95);
+                opacity: 0.0;
+            }
+
+            15% {
+                opacity: 1.0;
+                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.03);
+            }
+
+            50% {
+                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.06);
+            }
+
+            85% {
+                opacity: 0.96;
+                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.02);
+            }
+
+            100% {
+                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.0);
+                opacity: 0.0;
+            }
+        }
     </style>
 </head>
 
 <body bgcolor="#ffffff">
     <div id="halo-container" aria-hidden="true"></div>
 
-    <div id="image-layer" style="position:fixed;inset:0;z-index:2;">
-        <img src="./static/day1.jpg" data-video="./static/day1.mov"
-            style="position: relative; top: 50px; left: 50px; width: 400px; cursor: pointer;">
-        <img src="./static/day2.jpg" data-video="./static/day2.mov"
-            style="position: relative; top: 350px; left: 400px; width: 400px; cursor: pointer;">
-        <img src="./static/day3.jpg" data-video="./static/day3.mov"
-            style="position: relative; top: 550px; left: 600px; width: 400px; cursor: pointer;">
-        <img src="./static/day4.jpg" data-video="./static/day4.mov"
-            style="position: relative; top: 650px; left: 50px; width: 400px; cursor: pointer;">
-        <img src="./static/day5.jpg" data-video="./static/day5.mov"
-            style="position: relative; top: 650px; left: 50px; width: 400px; cursor: pointer;">
-        <img src="./static/day6.jpg" data-video="./static/day6.mov"
-            style="position: relative; top: 650px; left: 50px; width: 400px; cursor: pointer;">
-        <img src="./static/day7.jpg" data-video="./static/day7.mov"
-            style="position: relative; top: 650px; left: 50px; width: 400px; cursor: pointer;">
+    <div class="description-container">
+        <select id="language-select" onchange="
+        {
+            const enDesc = document.getElementById('en');
+            const frDesc = document.getElementById('fr');
+            if(this.value==='en'){
+                enDesc.style.display='block';
+                frDesc.style.display='none';
+            } else if(this.value==='fr'){
+                enDesc.style.display='none';
+                frDesc.style.display='block';
+            }
+        }">
+            <option value="en" selected>English</option>
+            <option value="fr">Français</option>
+        </select>
+        <div class="description" id="en">
+            <p>with <strong>diary.mp4</strong>, o0yu (Yuki) and gonima (Evan Magoni) shift the format of collaborative
+                audiovisual performance from a live event to a diaryｰlike experience. a change in pace, space and focus,
+                towards non-linear forms and a cozier process.</p>
+            <p>the artists met over a warm meal and spent one week as virtual pen pals, sending a single evolving clip
+                back and forth, to create seven short diary entries.</p>
+            <p>for the installation, a low table on a rug and cushions lower the viewer's gaze and pace.</p>
+            <p>the creation process lead to variations and branches, open pages of a slice-of-dream chapter.</p>
+            <p><strong>please explore</strong> by moving the mouse and clicking to open the videos, and come back any
+                time:
+                <em>mp4diary.neocities.org</em> :)
+            </p>
+        </div>
+        <div class="description" id="fr" style="display:none;">
+            <p>avec <strong>diary.mp4</strong>, o0yu (Yuki) et gonima (Evan Magoni) transforment le format de la
+                performance
+                audiovisuelle
+                collaborative, passant d'un événement en direct à une expérience semblable à un journal intime. un
+                changement de rythme, d'espace et d'orientation, vers des formes non linéaires et un processus plus
+                intimiste.</p>
+            <p>les artistes se sont rencontrés autour d'un repas chaleureux et ont passé une semaine à échanger des
+                messages
+                virtuels, s'envoyant un seul clip évolutif, afin de créer sept courtes entrées de journal intime.</p>
+            <p>pour l'installation, une table basse sur un tapis, deux coussins et deux écouteurs connectés à un
+                ordinateur portable invitent
+                le
+                spectateur à baisser le regard et à ralentir le rythme.</p>
+            <p>Le processus de création n'a pas abouti à un produit final ou à une performance unique, mais plutôt à des
+                variations et des ramifications, des pages ouvertes d'un chapitre de rêve.</p>
+            <p>explorez en déplaçant la souris et en cliquant pour ouvrir les vidéos, et revenez quand vous le souhaitez
+                : <em>mp4diary.neocities.org</em> :)</p>
+        </div>
+    </div>
+
+    <div id="image-layer">
+        <!-- grid items populate below -->
+        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+            <img src="./static/day1.jpg" data-video="./static/day1.mov"
+                style="width:100%;max-width:420px;cursor:pointer;" />
+        </div>
+        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+            <img src="./static/day2.jpg" data-video="./static/day2.mov"
+                style="width:100%;max-width:420px;cursor:pointer;" />
+        </div>
+        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+            <img src="./static/day3.jpg" data-video="./static/day3.mov"
+                style="width:100%;max-width:420px;cursor:pointer;" />
+        </div>
+        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+            <img src="./static/day4.jpg" data-video="./static/day4.mov"
+                style="width:100%;max-width:420px;cursor:pointer;" />
+        </div>
+        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+            <img src="./static/day5.jpg" data-video="./static/day5.mov"
+                style="width:100%;max-width:420px;cursor:pointer;" />
+        </div>
+        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+            <img src="./static/day6.jpg" data-video="./static/day6.mov"
+                style="width:100%;max-width:420px;cursor:pointer;" />
+        </div>
+        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+            <img src="./static/day7.jpg" data-video="./static/day7.mov"
+                style="width:100%;max-width:420px;cursor:pointer;" />
+        </div>
     </div>
 
     <script>
@@ -101,19 +245,9 @@
             document.addEventListener('keydown', mark, { once: true });
             document.addEventListener('touchstart', mark, { once: true });
         })();
-        window.HaloBackgroundConfig = window.HaloBackgroundConfig || {
-            count: 120,
-            colors: [
-                'rgba(12, 12, 12, 0.95)',
-                'rgba(36, 36, 36, 0.95)',
-                'rgba(64, 64, 64, 0.95)',
-                'rgba(16, 20, 24, 0.95)'
-            ],
-            sizeMin: 6,
-            sizeMax: 36,
-            blur: 6
-        };
     </script>
+
+    <script src="./static/particles.min.js" defer></script>
     <script src="./static/halo.js" defer></script>
 
     <script>
@@ -192,7 +326,6 @@
 
     <script>
         (function () {
-            // small runtime config (can be changed on window for customization)
             window.FlashlightConfig = window.FlashlightConfig || { radius: 260, enabled: true };
 
             const container = document.getElementById('image-layer');
@@ -202,10 +335,64 @@
             const images = Array.from(container.querySelectorAll('img'));
             images.forEach(img => {
                 img.classList.add('masked');
-                // start hidden until user moves over an image (keeps the same UX as the fullscreen flashlight)
+                // start hidden until user moves over an image
                 img.classList.add('hidden');
                 img.style.setProperty('--fr', window.FlashlightConfig.radius + 'px');
+
+                // assign a small random offset so the grid looks staggered
+                const ox = Math.round((Math.random() - 0.5) * 80); // -40..40
+                const oy = Math.round((Math.random() - 0.5) * 60); // -30..30
+                img.style.setProperty('--ox', ox + 'px');
+                img.style.setProperty('--oy', oy + 'px');
             });
+
+            // pulsing discovery: occasionally reveal a hidden masked image to hint presence
+            window.FlashlightPulseConfig = window.FlashlightPulseConfig || { enabled: true, minDelay: 3000, maxDelay: 9000, duration: 5000 };
+
+            let pulseTimer = null;
+
+            function pickRandomHiddenImage() {
+                const hidden = images.filter(i => i.classList.contains('hidden'));
+                if (!hidden.length) return null;
+                // prefer images not pulsed recently
+                const idx = Math.floor(Math.random() * hidden.length);
+                return hidden[idx];
+            }
+
+            function pulseImage(img) {
+                if (!img) return;
+                // don't pulse if pointer currently inside (user already discovered it)
+                const rect = img.getBoundingClientRect();
+                // center the pulse at the image center
+                const cx = Math.round(rect.width / 2);
+                const cy = Math.round(rect.height / 2);
+                img.style.setProperty('--fx', cx + 'px');
+                img.style.setProperty('--fy', cy + 'px');
+
+                // show briefly
+                img.classList.remove('hidden');
+                img.classList.add('pulse');
+
+                // remove pulse state after duration
+                setTimeout(() => {
+                    img.classList.remove('pulse');
+                    // if still enabled, hide again
+                    if (window.FlashlightConfig && window.FlashlightConfig.enabled) img.classList.add('hidden');
+                }, window.FlashlightPulseConfig.duration || 1000);
+            }
+
+            function scheduleNextPulse() {
+                if (!window.FlashlightPulseConfig.enabled) return;
+                const delay = window.FlashlightPulseConfig.minDelay + Math.random() * (window.FlashlightPulseConfig.maxDelay - window.FlashlightPulseConfig.minDelay);
+                pulseTimer = setTimeout(() => {
+                    const img = pickRandomHiddenImage();
+                    if (img) pulseImage(img);
+                    scheduleNextPulse();
+                }, delay);
+            }
+
+            // start pulsing loop
+            if (window.FlashlightPulseConfig.enabled) scheduleNextPulse();
 
             function setRadius(r) {
                 images.forEach(i => i.style.setProperty('--fr', r + 'px'));
@@ -223,29 +410,49 @@
                 images.forEach(i => i.classList.remove('masked', 'hidden'));
             }
 
-            // track pointer and update each image's local mask if pointer sits inside its bounds
+
+            // Throttle pointer/touch handling by batching events and processing via requestAnimationFrame
+            let rafScheduled = false;
+            let pendingPos = { x: 0, y: 0 };
+
+            function scheduleProcess(clientX, clientY) {
+                pendingPos.x = clientX;
+                pendingPos.y = clientY;
+                if (!rafScheduled) {
+                    rafScheduled = true;
+                    requestAnimationFrame(() => {
+                        rafScheduled = false;
+                        processPosition(pendingPos.x, pendingPos.y);
+                    });
+                }
+            }
+
             function onPointerMove(e) {
                 if (!window.FlashlightConfig.enabled) return;
-                for (const img of images) {
-                    const r = img.getBoundingClientRect();
-                    const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-                    if (inside) {
-                        const cx = Math.round(e.clientX - r.left);
-                        const cy = Math.round(e.clientY - r.top);
-                        img.classList.remove('hidden');
-                        img.style.setProperty('--fx', cx + 'px');
-                        img.style.setProperty('--fy', cy + 'px');
-                    } else {
-                        // push mask off-screen so image is hidden
-                        img.classList.add('hidden');
-                    }
-                }
+                scheduleProcess(e.clientX, e.clientY);
             }
 
             function onTouchMove(e) {
                 const t = e.touches && e.touches[0];
-                if (!t) return;
-                onPointerMove(t);
+                if (!t || !window.FlashlightConfig.enabled) return;
+                scheduleProcess(t.clientX, t.clientY);
+            }
+
+            function processPosition(clientX, clientY) {
+                // update each image based on the latest batched cursor position
+                for (const img of images) {
+                    const r = img.getBoundingClientRect();
+                    const inside = clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
+                    if (inside) {
+                        const cx = Math.round(clientX - r.left);
+                        const cy = Math.round(clientY - r.top);
+                        img.classList.remove('hidden');
+                        img.style.setProperty('--fx', cx + 'px');
+                        img.style.setProperty('--fy', cy + 'px');
+                    } else {
+                        img.classList.add('hidden');
+                    }
+                }
             }
 
             // wire events

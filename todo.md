@@ -1,2 +1,3 @@
-- [ ] description text in corner
-- [ ] image border
+- [x] description text in corner
+- [x] performance (remove particles?? replace w gif) - replaced w particles.js
+- [ ] image sizing
