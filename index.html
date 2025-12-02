@@ -10,7 +10,6 @@
         body {
             position: relative;
             background: #fff;
-            overflow: hidden;
             padding: 16px;
         }
 
@@ -22,139 +21,153 @@
             margin-bottom: 16px;
         }
 
-        .description-container {
-            position: fixed;
-            right: 16px;
-            top: 16px;
-            max-width: 500px;
-            margin: 0 auto 48px auto;
-            padding: 0 16px;
-            z-index: 3;
-            text-align: right;
-        }
-
-        .description {
+        .description,
+        #language-select {
             padding: 0;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
                 sans-serif;
-            /* font-family: Verdana, Geneva, Tahoma, sans-serif; */
-            pointer-events: none;
             font-size: 16px;
             line-height: 1.5;
             color: #222;
         }
 
-        video {
-            position: absolute;
-            width: 300px;
-        }
-
-        /* halo background */
-        #halo-container {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .halo {
-            position: absolute;
-            border-radius: 50%;
-            /* darker particles use a slightly tighter blur */
-            filter: blur(6px);
-            transform: translate3d(0, 0, 0);
-            /* fallback/base opacity for non-JS or initial paint */
-            opacity: 1.0;
-            /* on white background a multiply blend gives dark glows */
-            mix-blend-mode: multiply;
-            will-change: transform, opacity;
-        }
-
-        /* image layer container */
-        #image-layer {
-            position: fixed;
-            inset: 0;
-            z-index: 2;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            grid-auto-rows: 1fr 1fr;
-            gap: 36px;
-            align-items: center;
-            justify-items: center;
-            padding: 36px;
-            box-sizing: border-box;
-        }
-
-        /* make each grid cell clip overflow and allow images to fill the full cell height */
-        .image-item {
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* images: prefer filling the full cell height and let width size automatically */
-        .image-item img {
-            display: block;
-            height: 100%;
-            width: auto;
-            max-width: none;
-            object-fit: cover;
-            /* safety in case some images still use width/height */
-            margin: 0 auto;
-        }
-
-        /* mask applied to the grid cell container — child image content will be revealed inside the circular mask */
-        .image-item.masked {
-            -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
-            mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            transition: -webkit-mask-position 120ms linear, mask-position 120ms linear;
-        }
-
-        /* allow the image inside a cell to slide around inside the cell — offsets are stored on the image itself */
-        .image-item img {
-            position: relative;
-            transform: translate(var(--ox, 0px), var(--oy, 0px));
-            transition: transform 220ms ease, -webkit-mask-position 120ms linear, mask-position 120ms linear;
-        }
-
-        /* helper: when a cell is hidden (not under cursor), push the center off-screen so it becomes invisible */
-        .image-item.hidden {
-            -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
-            mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
-        }
-
-        /* pulse to hint presence — temporarily reveal the center and scale briefly */
-        /* pulse animation applies to the image element so it scales inside the cell */
-        img.pulse {
-            animation: pulseReveal var(--pulse-duration, 1.2s) ease-in-out both;
-        }
-
-        @keyframes pulseReveal {
-            0% {
-                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(0.95);
-                opacity: 0.0;
+        .
+        /* larger screens */
+        @media screen and (min-width: 600px) {
+            body {
+                overflow: hidden;
             }
 
-            15% {
+            .description-container {
+                position: fixed;
+                right: 16px;
+                top: 16px;
+                max-width: 500px;
+                margin: 0 auto 48px auto;
+                padding: 0 16px;
+                z-index: 3;
+                text-align: right;
+            }
+
+            .description {
+                pointer-events: none;
+            }
+
+            video {
+                position: absolute;
+                width: 300px;
+            }
+
+            /* halo background */
+            #halo-container {
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                z-index: 0;
+                overflow: hidden;
+            }
+
+            .halo {
+                position: absolute;
+                border-radius: 50%;
+                /* darker particles use a slightly tighter blur */
+                filter: blur(6px);
+                transform: translate3d(0, 0, 0);
+                /* fallback/base opacity for non-JS or initial paint */
                 opacity: 1.0;
-                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.03);
+                /* on white background a multiply blend gives dark glows */
+                mix-blend-mode: multiply;
+                will-change: transform, opacity;
             }
 
-            50% {
-                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.06);
+            /* image layer container */
+            #image-layer {
+                position: fixed;
+                inset: 0;
+                z-index: 2;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                grid-auto-rows: 1fr 1fr;
+                gap: 36px;
+                align-items: center;
+                justify-items: center;
+                padding: 36px;
+                box-sizing: border-box;
             }
 
-            85% {
-                opacity: 0.96;
-                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.02);
+            /* make each grid cell clip overflow and allow images to fill the full cell height */
+            .image-item {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
             }
 
-            100% {
-                transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.0);
-                opacity: 0.0;
+            /* images: prefer filling the full cell height and let width size automatically */
+            .image-item img {
+                display: block;
+                height: 100%;
+                width: auto;
+                max-width: none;
+                object-fit: cover;
+                /* safety in case some images still use width/height */
+                margin: 0 auto;
+            }
+
+            @media (hover: hover) {
+
+                /* mask applied to the grid cell container — child image content will be revealed inside the circular mask */
+                .image-item.masked {
+                    -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+                    mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+                    -webkit-mask-repeat: no-repeat;
+                    mask-repeat: no-repeat;
+                    transition: -webkit-mask-position 120ms linear, mask-position 120ms linear;
+                }
+
+                /* allow the image inside a cell to slide around inside the cell — offsets are stored on the image itself */
+                .image-item img {
+                    position: relative;
+                    transform: translate(var(--ox, 0px), var(--oy, 0px));
+                    transition: transform 220ms ease, -webkit-mask-position 120ms linear, mask-position 120ms linear;
+                }
+
+                /* helper: when a cell is hidden (not under cursor), push the center off-screen so it becomes invisible */
+                .image-item.hidden {
+                    -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+                    mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+                }
+
+                /* pulse to hint presence — temporarily reveal the center and scale briefly */
+                /* pulse animation applies to the image element so it scales inside the cell */
+                img.pulse {
+                    animation: pulseReveal var(--pulse-duration, 1.2s) ease-in-out both;
+                }
+
+                @keyframes pulseReveal {
+                    0% {
+                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(0.95);
+                        opacity: 0.0;
+                    }
+
+                    15% {
+                        opacity: 1.0;
+                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.03);
+                    }
+
+                    50% {
+                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.06);
+                    }
+
+                    85% {
+                        opacity: 0.96;
+                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.02);
+                    }
+
+                    100% {
+                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.0);
+                        opacity: 0.0;
+                    }
+                }
             }
         }
     </style>
@@ -187,6 +200,7 @@
                 back and forth, to create seven short diary entries.</p>
             <p>for the installation, a low table on a rug and cushions lower the viewer's gaze and pace.</p>
             <p>the creation process lead to variations and branches, open pages of a slice-of-dream chapter.</p>
+            <!-- TODO change text based on input device -->
             <p>please <strong>explore by moving the mouse</strong> and clicking to open the videos, and come back any
                 time:
                 <em>mp4diary.neocities.org</em> :)
@@ -206,42 +220,44 @@
                 ordinateur portable invitent
                 le
                 spectateur à baisser le regard et à ralentir le rythme.</p>
-            <p>Le processus de création n'a pas abouti à un produit final ou à une performance unique, mais plutôt à des
+            <p>le processus de création n'a pas abouti à un produit final ou à une performance unique, mais plutôt à des
                 variations et des ramifications, des pages ouvertes d'un chapitre de rêve.</p>
+            <!-- TODO change text based on input device -->
             <p><strong>explorez en déplaçant la souris</strong> et en cliquant pour ouvrir les vidéos, et revenez quand
                 vous le souhaitez
                 : <em>mp4diary.neocities.org</em> :)</p>
         </div>
     </div>
 
+    <!-- TODO default to smaller videos, only load larger if screen height > 480 + some buffer -->
+    <!-- TODO actual video elements on mobile? only replace on desktop -->
     <div id="image-layer">
-        <!-- grid items populate below -->
-        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+        <div class="image-item">
             <img src="./static/day1.jpg" data-video="./static/day1.mov"
                 style="height:100%;width:auto;cursor:pointer;" />
         </div>
-        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+        <div class="image-item">
             <img src="./static/day2.jpg" data-video="./static/day2.mov"
                 style="height:100%;width:auto;cursor:pointer;" />
         </div>
-        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+        <div class="image-item">
             <img src="./static/day3.jpg" data-video="./static/day3.mov"
                 style="height:100%;width:auto;cursor:pointer;" />
         </div>
         <div class="image-item description-item"><!-- description placeholder -->&nbsp;</div>
-        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+        <div class="image-item">
             <img src="./static/day4.jpg" data-video="./static/day4.mov"
                 style="height:100%;width:auto;cursor:pointer;" />
         </div>
-        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+        <div class="image-item">
             <img src="./static/day5.jpg" data-video="./static/day5.mov"
                 style="height:100%;width:auto;cursor:pointer;" />
         </div>
-        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+        <div class="image-item">
             <img src="./static/day6.jpg" data-video="./static/day6.mov"
                 style="height:100%;width:auto;cursor:pointer;" />
         </div>
-        <div class="image-item" style="display:flex;align-items:center;justify-content:center;position:relative;">
+        <div class="image-item">
             <img src="./static/day7.jpg" data-video="./static/day7.mov"
                 style="height:100%;width:auto;cursor:pointer;" />
         </div>
@@ -267,7 +283,9 @@
         })();
     </script>
 
+    <!-- TODO only load the below for more powerful devices -->
     <script src="./static/particles.min.js" defer></script>
+    <!-- TODO only load the below for desktop -->
     <script src="./static/halo.js" defer></script>
 
     <script>
@@ -366,6 +384,7 @@
         }, { capture: true });
     </script>
 
+    <!-- TODO only load the below on desktop -->
     <script>
         (function () {
             window.FlashlightConfig = window.FlashlightConfig || { radius: 260, enabled: true };
