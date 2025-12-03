@@ -58,19 +58,6 @@
             overflow: hidden;
         }
 
-        .halo {
-            position: absolute;
-            border-radius: 50%;
-            /* darker particles use a slightly tighter blur */
-            filter: blur(6px);
-            transform: translate3d(0, 0, 0);
-            /* fallback/base opacity for non-JS or initial paint */
-            opacity: 1.0;
-            /* on white background a multiply blend gives dark glows */
-            mix-blend-mode: multiply;
-            will-change: transform, opacity;
-        }
-
         /* image layer container */
         #image-layer {
             position: fixed;
@@ -272,7 +259,7 @@
 
     <script>
         // Open a centered popup window and write a simple HTML document with an autoplaying, muted video
-        function openCenteredPopup(url, desiredWidth = 960, desiredHeight = 604) {
+        function openCenteredPopup(url, desiredWidth = 1024, desiredHeight = 604) {
             if (!url) return null;
 
             // calculate the size within available screen
@@ -361,8 +348,7 @@
             if (!el) return;
             e.preventDefault();
             const videoUrl = el.dataset && el.dataset.video;
-            // open popup at desired, fixed size: 960x604 (still constrained by available screen)
-            openCenteredPopup(videoUrl, 960, 604);
+            openCenteredPopup(videoUrl);
         }, { capture: true });
     </script>
 
@@ -393,7 +379,7 @@
             });
 
             // pulsing discovery: occasionally reveal a hidden masked image to hint presence
-            window.FlashlightPulseConfig = window.FlashlightPulseConfig || { enabled: true, minDelay: 3000, maxDelay: 9000, duration: 5000 };
+            window.FlashlightPulseConfig = window.FlashlightPulseConfig || { enabled: false, minDelay: 3000, maxDelay: 9000, duration: 5000 };
 
             let pulseTimer = null;
 
