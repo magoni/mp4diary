@@ -348,8 +348,7 @@
             if (!el) return;
             e.preventDefault();
             const videoUrl = el.dataset && el.dataset.video;
-            // open popup at desired, fixed size: 960x604 (still constrained by available screen)
-            openCenteredPopup(videoUrl, 1024, 604);
+            openCenteredPopup(videoUrl);
         }, { capture: true });
     </script>
 
@@ -379,6 +378,67 @@
                 img.style.setProperty('--ox', ox + 'px');
                 img.style.setProperty('--oy', oy + 'px');
             });
+
+            // pulsing discovery: occasionally reveal a hidden masked image to hint presence
+            window.FlashlightPulseConfig = window.FlashlightPulseConfig || { enabled: true, minDelay: 3000, maxDelay: 9000, duration: 5000 };
+
+            let pulseTimer = null;
+
+            function pickRandomHiddenImage() {
+                const hidden = items.filter(i => i.classList.contains('hidden') && i.querySelector('img'));
+                if (!hidden.length) return null;
+                // prefer images not pulsed recently
+                const idx = Math.floor(Math.random() * hidden.length);
+                return hidden[idx];
+            }
+
+            function pulseImage(item) {
+                if (!item) return;
+                // skip pulsing if the user is currently hovering this cell — don't interfere
+                try {
+                    if (item.matches && item.matches(':hover')) return;
+                } catch (_) { }
+
+                const img = item.querySelector && item.querySelector('img');
+                if (!img) return;
+
+                // center the pulse at the cell center
+                const rect = item.getBoundingClientRect();
+                const cx = Math.round(rect.width / 2);
+                const cy = Math.round(rect.height / 2);
+                item.style.setProperty('--fx', cx + 'px');
+                item.style.setProperty('--fy', cy + 'px');
+
+                // show briefly
+                item.classList.remove('hidden');
+                img.classList.add('pulse');
+
+                // remove pulse state after duration
+                setTimeout(() => {
+                    img.classList.remove('pulse');
+                    // only hide again if still enabled and NOT hovered — avoid racing with pointer
+                    try {
+                        if (window.FlashlightConfig && window.FlashlightConfig.enabled && !(item.matches && item.matches(':hover'))) {
+                            item.classList.add('hidden');
+                        }
+                    } catch (_) {
+                        if (window.FlashlightConfig && window.FlashlightConfig.enabled) item.classList.add('hidden');
+                    }
+                }, window.FlashlightPulseConfig.duration || 1000);
+            }
+
+            function scheduleNextPulse() {
+                if (!window.FlashlightPulseConfig.enabled) return;
+                const delay = window.FlashlightPulseConfig.minDelay + Math.random() * (window.FlashlightPulseConfig.maxDelay - window.FlashlightPulseConfig.minDelay);
+                pulseTimer = setTimeout(() => {
+                    const img = pickRandomHiddenImage();
+                    if (img) pulseImage(img);
+                    scheduleNextPulse();
+                }, delay);
+            }
+
+            // start pulsing loop
+            if (window.FlashlightPulseConfig.enabled) scheduleNextPulse();
 
             function setRadius(r) {
                 items.forEach(i => i.style.setProperty('--fr', r + 'px'));

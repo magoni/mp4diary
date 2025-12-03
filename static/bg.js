@@ -6,8 +6,6 @@
     sprite: "/static/star.png",
     sizeMin: 3,
     sizeMax: 18,
-    speed: 2.2,
-    blur: 2,
   };
 
   const prefersReduced =
@@ -22,21 +20,21 @@
 
     const particles = {
       number: {
-        value: CONFIG.count,
+        value: 50,
         density: { enable: true, value_area: 900 },
       },
       color: { value: "#ffffff" },
-      shape: CONFIG.sprite
+      shape: "/static/star.png"
         ? {
             type: "image",
-            image: { src: CONFIG.sprite, width: 100, height: 100 },
+            image: { src: "/static/star.png", width: 100, height: 100 },
           }
         : { type: "circle" },
-      opacity: { value: 1, random: false },
-      size: { value: sizeVal, random: true, anim: { enable: false } },
+      opacity: { value: 1, random: true },
+      size: { value: sizeVal, random: true, anim: { enable: true } },
       move: {
         enable: !prefersReduced,
-        speed: CONFIG.speed,
+        speed: 2,
         direction: "none",
         random: true,
         straight: false,
