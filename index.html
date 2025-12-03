@@ -8,12 +8,11 @@
     <link rel="icon" href="/favicon.ico" />
     <style>
         body {
-            position: relative;
             background: #fff;
             padding: 16px;
         }
 
-        .description p {
+        p {
             margin-top: 0;
         }
 
@@ -31,11 +30,19 @@
             color: #222;
         }
 
-        .
+        .description-spacer {
+            display: none;
+        }
+
         /* larger screens */
         @media screen and (min-width: 600px) {
             body {
+                position: relative;
                 overflow: hidden;
+            }
+
+            .description-spacer {
+                display: block;
             }
 
             .description-container {
@@ -58,8 +65,8 @@
                 width: 300px;
             }
 
-            /* halo background */
-            #halo-container {
+            /* animated background */
+            #bg-container {
                 position: fixed;
                 inset: 0;
                 pointer-events: none;
@@ -67,7 +74,7 @@
                 overflow: hidden;
             }
 
-            .halo {
+            .bg {
                 position: absolute;
                 border-radius: 50%;
                 /* darker particles use a slightly tighter blur */
@@ -174,7 +181,7 @@
 </head>
 
 <body bgcolor="#ffffff">
-    <div id="halo-container" aria-hidden="true"></div>
+    <div id="bg-container" aria-hidden="true"></div>
 
     <div class="description-container">
         <select id="language-select" onchange="
@@ -244,7 +251,7 @@
             <img src="./static/day3.jpg" data-video="./static/day3.mov"
                 style="height:100%;width:auto;cursor:pointer;" />
         </div>
-        <div class="image-item description-item"><!-- description placeholder -->&nbsp;</div>
+        <div class="image-item description-spacer"><!-- description placeholder -->&nbsp;</div>
         <div class="image-item">
             <img src="./static/day4.jpg" data-video="./static/day4.mov"
                 style="height:100%;width:auto;cursor:pointer;" />
@@ -286,7 +293,7 @@
     <!-- TODO only load the below for more powerful devices -->
     <script src="./static/particles.min.js" defer></script>
     <!-- TODO only load the below for desktop -->
-    <script src="./static/halo.js" defer></script>
+    <script src="./static/bg.js" defer></script>
 
     <script>
         // Open a centered popup window and write a simple HTML document with an autoplaying, muted video

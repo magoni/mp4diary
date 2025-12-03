@@ -1,9 +1,8 @@
 (function () {
   "use strict";
 
-  // final, self-contained configuration for the halo particle effect
   const CONFIG = {
-    count: 160,
+    count: 60,
     sprite: "/static/star.png",
     sizeMin: 3,
     sizeMax: 18,
@@ -57,15 +56,8 @@
 
   function start() {
     if (prefersReduced) return false;
-    const container = document.getElementById("halo-container");
+    const container = document.getElementById("bg-container");
     if (!container) return false;
-
-    if (!window.particlesJS) {
-      console.warn(
-        "particlesJS is not available — ensure particles.min.js is included before halo.js"
-      );
-      return false;
-    }
 
     // destroy any existing instance attached to the same container
     if (window.pJSDom && window.pJSDom.length) {
@@ -89,7 +81,7 @@
     }
 
     try {
-      window.particlesJS("halo-container", buildConfig());
+      window.particlesJS("bg-container", buildConfig());
       // apply blur to canvas if requested
       const canvas = container.querySelector("canvas");
       if (canvas && CONFIG.blur) canvas.style.filter = `blur(${CONFIG.blur}px)`;
@@ -112,11 +104,7 @@
     }
   }
 
-  // auto-start on ready (unless reduced-motion is set)
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", start);
   else start();
-
-  // This module is intentionally self-contained. It auto-starts and does
-  // not expose a public API on window to keep the page surface minimal.
 })();
