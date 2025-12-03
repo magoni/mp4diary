@@ -16,6 +16,13 @@
             margin-top: 0;
         }
 
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            cursor: pointer;
+        }
+
         #language-select {
             margin-bottom: 16px;
         }
@@ -32,6 +39,35 @@
 
         .description-spacer {
             display: none;
+        }
+
+
+        /* animated background */
+        #bg-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg {
+            position: absolute;
+            border-radius: 50%;
+            /* darker particles use a slightly tighter blur */
+            filter: blur(6px);
+            transform: translate3d(0, 0, 0);
+            /* fallback/base opacity for non-JS or initial paint */
+            opacity: 1.0;
+            /* on white background a multiply blend gives dark glows */
+            mix-blend-mode: multiply;
+            will-change: transform, opacity;
+        }
+
+        .image-item img {
+            position: relative;
+            transform: translate(var(--ox, 0px), var(--oy, 0px));
+            transition: transform 220ms ease, -webkit-mask-position 120ms linear, mask-position 120ms linear;
         }
 
         /* larger screens */
@@ -63,28 +99,6 @@
             video {
                 position: absolute;
                 width: 300px;
-            }
-
-            /* animated background */
-            #bg-container {
-                position: fixed;
-                inset: 0;
-                pointer-events: none;
-                z-index: 0;
-                overflow: hidden;
-            }
-
-            .bg {
-                position: absolute;
-                border-radius: 50%;
-                /* darker particles use a slightly tighter blur */
-                filter: blur(6px);
-                transform: translate3d(0, 0, 0);
-                /* fallback/base opacity for non-JS or initial paint */
-                opacity: 1.0;
-                /* on white background a multiply blend gives dark glows */
-                mix-blend-mode: multiply;
-                will-change: transform, opacity;
             }
 
             /* image layer container */
@@ -120,61 +134,24 @@
                 margin: 0 auto;
             }
 
-            @media (hover: hover) {
 
-                /* mask applied to the grid cell container — child image content will be revealed inside the circular mask */
-                .image-item.masked {
-                    -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
-                    mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
-                    -webkit-mask-repeat: no-repeat;
-                    mask-repeat: no-repeat;
-                    transition: -webkit-mask-position 120ms linear, mask-position 120ms linear;
-                }
+        }
 
-                /* allow the image inside a cell to slide around inside the cell — offsets are stored on the image itself */
-                .image-item img {
-                    position: relative;
-                    transform: translate(var(--ox, 0px), var(--oy, 0px));
-                    transition: transform 220ms ease, -webkit-mask-position 120ms linear, mask-position 120ms linear;
-                }
+        @media (hover: hover) {
 
-                /* helper: when a cell is hidden (not under cursor), push the center off-screen so it becomes invisible */
-                .image-item.hidden {
-                    -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
-                    mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
-                }
+            /* mask applied to the grid cell container — child image content will be revealed inside the circular mask */
+            .image-item.masked {
+                -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+                mask-image: radial-gradient(circle var(--fr, 160px) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                transition: -webkit-mask-position 120ms linear, mask-position 120ms linear;
+            }
 
-                /* pulse to hint presence — temporarily reveal the center and scale briefly */
-                /* pulse animation applies to the image element so it scales inside the cell */
-                img.pulse {
-                    animation: pulseReveal var(--pulse-duration, 1.2s) ease-in-out both;
-                }
-
-                @keyframes pulseReveal {
-                    0% {
-                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(0.95);
-                        opacity: 0.0;
-                    }
-
-                    15% {
-                        opacity: 1.0;
-                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.03);
-                    }
-
-                    50% {
-                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.06);
-                    }
-
-                    85% {
-                        opacity: 0.96;
-                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.02);
-                    }
-
-                    100% {
-                        transform: translate(var(--ox, 0px), var(--oy, 0px)) scale(1.0);
-                        opacity: 0.0;
-                    }
-                }
+            /* helper: when a cell is hidden (not under cursor), push the center off-screen so it becomes invisible */
+            .image-item.hidden {
+                -webkit-mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+                mask-image: radial-gradient(circle var(--fr, 160px) at -9999px -9999px, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
             }
         }
     </style>
@@ -207,7 +184,6 @@
                 back and forth, to create seven short diary entries.</p>
             <p>for the installation, a low table on a rug and cushions lower the viewer's gaze and pace.</p>
             <p>the creation process lead to variations and branches, open pages of a slice-of-dream chapter.</p>
-            <!-- TODO change text based on input device -->
             <p>please <strong>explore by moving the mouse</strong> and clicking to open the videos, and come back any
                 time:
                 <em>mp4diary.neocities.org</em> :)
@@ -229,7 +205,6 @@
                 spectateur à baisser le regard et à ralentir le rythme.</p>
             <p>le processus de création n'a pas abouti à un produit final ou à une performance unique, mais plutôt à des
                 variations et des ramifications, des pages ouvertes d'un chapitre de rêve.</p>
-            <!-- TODO change text based on input device -->
             <p><strong>explorez en déplaçant la souris</strong> et en cliquant pour ouvrir les vidéos, et revenez quand
                 vous le souhaitez
                 : <em>mp4diary.neocities.org</em> :)</p>
@@ -240,33 +215,26 @@
     <!-- TODO actual video elements on mobile? only replace on desktop -->
     <div id="image-layer">
         <div class="image-item">
-            <img src="./static/day1.jpg" data-video="./static/day1.mov"
-                style="height:100%;width:auto;cursor:pointer;" />
+            <img src="./static/day1.png" data-video="./static/day1.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day2.jpg" data-video="./static/day2.mov"
-                style="height:100%;width:auto;cursor:pointer;" />
+            <img src="./static/day2.png" data-video="./static/day2.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day3.jpg" data-video="./static/day3.mov"
-                style="height:100%;width:auto;cursor:pointer;" />
+            <img src="./static/day3.png" data-video="./static/day3.mov" />
         </div>
         <div class="image-item description-spacer"><!-- description placeholder -->&nbsp;</div>
         <div class="image-item">
-            <img src="./static/day4.jpg" data-video="./static/day4.mov"
-                style="height:100%;width:auto;cursor:pointer;" />
+            <img src="./static/day4.png" data-video="./static/day4.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day5.jpg" data-video="./static/day5.mov"
-                style="height:100%;width:auto;cursor:pointer;" />
+            <img src="./static/day5.png" data-video="./static/day5.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day6.jpg" data-video="./static/day6.mov"
-                style="height:100%;width:auto;cursor:pointer;" />
+            <img src="./static/day6.png" data-video="./static/day6.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day7.jpg" data-video="./static/day7.mov"
-                style="height:100%;width:auto;cursor:pointer;" />
+            <img src="./static/day7.png" data-video="./static/day7.mov" />
         </div>
     </div>
 
@@ -290,14 +258,13 @@
         })();
     </script>
 
-    <!-- TODO only load the below for more powerful devices -->
+    <!-- TODO only load the below for more recent browsers -->
     <script src="./static/particles.min.js" defer></script>
-    <!-- TODO only load the below for desktop -->
     <script src="./static/bg.js" defer></script>
 
     <script>
         // Open a centered popup window and write a simple HTML document with an autoplaying, muted video
-        function openCenteredPopup(url, desiredWidth = 960, desiredHeight = 604) {
+        function openCenteredPopup(url, desiredWidth = 1024, desiredHeight = 604) {
             if (!url) return null;
 
             // calculate the size within available screen
@@ -387,13 +354,13 @@
             e.preventDefault();
             const videoUrl = el.dataset && el.dataset.video;
             // open popup at desired, fixed size: 960x604 (still constrained by available screen)
-            openCenteredPopup(videoUrl, 960, 604);
+            openCenteredPopup(videoUrl, 1024, 604);
         }, { capture: true });
     </script>
 
-    <!-- TODO only load the below on desktop -->
     <script>
         (function () {
+            if (!window.matchMedia || !window.matchMedia("(hover: hover)")) return;
             window.FlashlightConfig = window.FlashlightConfig || { radius: 260, enabled: true };
 
             const container = document.getElementById('image-layer');
@@ -417,67 +384,6 @@
                 img.style.setProperty('--ox', ox + 'px');
                 img.style.setProperty('--oy', oy + 'px');
             });
-
-            // pulsing discovery: occasionally reveal a hidden masked image to hint presence
-            window.FlashlightPulseConfig = window.FlashlightPulseConfig || { enabled: true, minDelay: 3000, maxDelay: 9000, duration: 5000 };
-
-            let pulseTimer = null;
-
-            function pickRandomHiddenImage() {
-                const hidden = items.filter(i => i.classList.contains('hidden') && i.querySelector('img'));
-                if (!hidden.length) return null;
-                // prefer images not pulsed recently
-                const idx = Math.floor(Math.random() * hidden.length);
-                return hidden[idx];
-            }
-
-            function pulseImage(item) {
-                if (!item) return;
-                // skip pulsing if the user is currently hovering this cell — don't interfere
-                try {
-                    if (item.matches && item.matches(':hover')) return;
-                } catch (_) { }
-
-                const img = item.querySelector && item.querySelector('img');
-                if (!img) return;
-
-                // center the pulse at the cell center
-                const rect = item.getBoundingClientRect();
-                const cx = Math.round(rect.width / 2);
-                const cy = Math.round(rect.height / 2);
-                item.style.setProperty('--fx', cx + 'px');
-                item.style.setProperty('--fy', cy + 'px');
-
-                // show briefly
-                item.classList.remove('hidden');
-                img.classList.add('pulse');
-
-                // remove pulse state after duration
-                setTimeout(() => {
-                    img.classList.remove('pulse');
-                    // only hide again if still enabled and NOT hovered — avoid racing with pointer
-                    try {
-                        if (window.FlashlightConfig && window.FlashlightConfig.enabled && !(item.matches && item.matches(':hover'))) {
-                            item.classList.add('hidden');
-                        }
-                    } catch (_) {
-                        if (window.FlashlightConfig && window.FlashlightConfig.enabled) item.classList.add('hidden');
-                    }
-                }, window.FlashlightPulseConfig.duration || 1000);
-            }
-
-            function scheduleNextPulse() {
-                if (!window.FlashlightPulseConfig.enabled) return;
-                const delay = window.FlashlightPulseConfig.minDelay + Math.random() * (window.FlashlightPulseConfig.maxDelay - window.FlashlightPulseConfig.minDelay);
-                pulseTimer = setTimeout(() => {
-                    const img = pickRandomHiddenImage();
-                    if (img) pulseImage(img);
-                    scheduleNextPulse();
-                }, delay);
-            }
-
-            // start pulsing loop
-            if (window.FlashlightPulseConfig.enabled) scheduleNextPulse();
 
             function setRadius(r) {
                 items.forEach(i => i.style.setProperty('--fr', r + 'px'));
@@ -547,13 +453,6 @@
             // wire events
             document.addEventListener('pointermove', onPointerMove, { passive: true });
             document.addEventListener('touchmove', onTouchMove, { passive: true });
-
-            // keyboard toggle: 'f' toggles flashlight
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'f' || e.key === 'F') {
-                    if (window.FlashlightConfig.enabled) disable(); else enable();
-                }
-            });
 
             // expose API
             window.Flashlight = { enable, disable, setRadius };
