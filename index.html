@@ -58,26 +58,26 @@
     <!-- TODO actual video elements on mobile? only replace on desktop -->
     <div id="image-layer">
         <div class="image-item">
-            <img src="./static/day1.png" data-video="./static/day1.mov" />
+            <img src="./static/day1.png" data-video="https://mp4diary.netlify.app/static/day1.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day2.png" data-video="./static/day2.mov" />
+            <img src="./static/day2.png" data-video="https://mp4diary.netlify.app/static/day2.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day3.png" data-video="./static/day3.mov" />
+            <img src="./static/day3.png" data-video="https://mp4diary.netlify.app/static/day3.mov" />
         </div>
         <div class="image-item description-spacer"><!-- description placeholder -->&nbsp;</div>
         <div class="image-item">
-            <img src="./static/day4.png" data-video="./static/day4.mov" />
+            <img src="./static/day4.png" data-video="https://mp4diary.netlify.app/static/day4.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day5.png" data-video="./static/day5.mov" />
+            <img src="./static/day5.png" data-video="https://mp4diary.netlify.app/static/day5.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day6.png" data-video="./static/day6.mov" />
+            <img src="./static/day6.png" data-video="https://mp4diary.netlify.app/static/day6.mov" />
         </div>
         <div class="image-item">
-            <img src="./static/day7.png" data-video="./static/day7.mov" />
+            <img src="./static/day7.png" data-video="https://mp4diary.netlify.app/static/day7.mov" />
         </div>
     </div>
 
@@ -168,18 +168,17 @@
             return win;
         }
 
-        // If we're hosted on a neocities domain, hotlink videos from the public netlify site
         (function () {
             try {
                 const host = window.location.hostname || '';
-                if (host.indexOf('neocities') !== -1) {
+                if (host.indexOf('neocities') === -1) {
                     const base = 'https://mp4diary.netlify.app/';
                     document.querySelectorAll('img[data-video]').forEach(img => {
                         const v = img.getAttribute('data-video') || '';
                         // leave absolute URLs alone
                         if (!v || /^https?:\/\//i.test(v)) return;
                         // normalize relative path and hotlink to the netlify host
-                        const normalized = v.replace(/^\.\//, '').replace(/^\//, '');
+                        const normalized = v.replace(/^https:\/\/mp4diary\.netlify\.app\//, './');
                         const finalUrl = base + normalized;
                         img.setAttribute('data-video', finalUrl);
                         // ensure dataset reflects change immediately
